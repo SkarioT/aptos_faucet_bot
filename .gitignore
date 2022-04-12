@@ -5,6 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
+auth_data.py
 
 # Distribution / packaging
 .Python
