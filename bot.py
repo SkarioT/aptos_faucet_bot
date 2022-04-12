@@ -78,6 +78,7 @@ async def send_welcome(message: types.Message,state: FSMContext):
         await msg_for_clients.delete()
         await message.delete()
         await asyncio.sleep(5)
+        #
         
     
     
