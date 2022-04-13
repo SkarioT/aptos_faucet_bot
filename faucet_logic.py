@@ -78,6 +78,5 @@ class FaucetClient:
 rest_client = RestClient(TESTNET_URL)
 faucet_client = FaucetClient(FAUCET_URL, rest_client)
 
-# my_address = '45b44793724a5ecc6ad85fa60949d0824cfc7f61d6bd74490b13598379313141'
 
 
