@@ -51,6 +51,8 @@ async def send_welcome(message: types.Message,state: FSMContext):
     await GameStates.start.set()
     await message.delete()
     
+    
+# <----------- BALANCE LOGIC ---------------->    
 @dp.message_handler(commands=['balance'],state="*")
 async def send_welcome(message: types.Message,state: FSMContext):
     await GameStates.balance.set()
@@ -76,12 +78,9 @@ async def send_welcome(message: types.Message,state: FSMContext):
         await msg_for_clients.delete()
         await message.delete()
         await asyncio.sleep(5)
-        #
         
-    
-    
-    
-    
+        
+# <----------- FAUCET LOGIC ---------------->      
 @dp.message_handler(commands=['faucet'],state=GameStates.start)
 async def send_welcome(message: types.Message,state: FSMContext):
     state_bot = await state.get_state()
@@ -110,5 +109,7 @@ async def send_welcome(message: types.Message,state: FSMContext):
         await asyncio.sleep(5)
         await balance.delete()
 
+
+#RUN
 if __name__ == "__main__":
     executor.start_polling(dp,skip_updates=True)
