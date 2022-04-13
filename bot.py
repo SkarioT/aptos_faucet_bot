@@ -84,7 +84,7 @@ async def send_welcome(message: types.Message,state: FSMContext):
         
         
 # <----------- FAUCET LOGIC ---------------->      
-@dp.message_handler(commands=['faucet'],state=GameStates.start)
+@dp.message_handler(commands=['faucet'],state='*')
 async def send_welcome(message: types.Message,state: FSMContext):
     state_bot = await state.get_state()
     print(state_bot)
