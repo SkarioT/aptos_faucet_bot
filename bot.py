@@ -45,7 +45,7 @@ async def send_welcome(message: types.Message,state: FSMContext):
     state_bot = await state.get_state()
     print(state_bot)
 
-@dp.message_handler(commands=['help'],state="*")
+@dp.message_handler(commands=['help','change'],state="*")
 async def send_welcome(message: types.Message,state: FSMContext):
     answer = await bot.send_message(message.from_user.id,welcome_msg)
     await GameStates.start.set()
@@ -58,7 +58,7 @@ async def send_welcome(message: types.Message,state: FSMContext):
     await GameStates.balance.set()
     answer_msg = await bot.send_message(message.from_user.id,f"You have chosen to view your account balance\nEnter your account\wallet address:")
     await asyncio.sleep(10)
-    await answer_msg.delete()
+    # await answer_msg.delete()
     await message.delete()
     
 @dp.message_handler(state=GameStates.balance)
@@ -66,18 +66,21 @@ async def send_welcome(message: types.Message,state: FSMContext):
     msg_text = message.text
     print(msg_text,message.from_user.username,datetime.now())
     msg_for_clients = await message.reply(f"You entered: {msg_text}")
+    # await GameStates.start.set()
     if len(msg_text)!=64:
-        print("хуету ввел")
+        print(f"Bad address =( {msg_text}\n Address length must be 64 chars !!!")
         bad_msg = await message.reply("Bad address =( \n Address length must be 64 chars !!!")
         await asyncio.sleep(5)
         await bad_msg.delete()
         await msg_for_clients.delete()
+        await message.delete()
     else:
-        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter /help for change address")
+        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter /change for change address")
         await asyncio.sleep(5)
         await msg_for_clients.delete()
         await message.delete()
-        await asyncio.sleep(5)
+       
+
         
         
 # <----------- FAUCET LOGIC ---------------->      
@@ -95,14 +98,16 @@ async def send_welcome(message: types.Message,state: FSMContext):
     print(msg_text,message.from_user,datetime.now())
     msg_for_clients = await message.reply(f"You entered: {msg_text}")
     if len(msg_text)!=64:
-        print("хуету ввел")
+        print(f"Bad address =( {msg_text}\n Address length must be 64 chars !!!")
         bad_msg = await message.reply("Bad address =( \n Address length must be 64 chars!!!")
         await asyncio.sleep(5)
         await bad_msg.delete()
         await msg_for_clients.delete()
+        await message.delete()
+
     else:
         faucet_client.fund_account(msg_text, 1000)
-        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter /help for change address")
+        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter /change for change address")
         await asyncio.sleep(5)
         await msg_for_clients.delete()
         await message.delete()
