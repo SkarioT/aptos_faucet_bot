@@ -64,7 +64,7 @@ async def send_welcome(message: types.Message,state: FSMContext):
 @dp.message_handler(state=GameStates.balance)
 async def send_welcome(message: types.Message,state: FSMContext):
     msg_text = message.text
-    print(msg_text,message.from_user.username,datetime.now())
+    print(msg_text,message.from_user,datetime.now())
     msg_for_clients = await message.reply(f"You entered: {msg_text}")
     # await GameStates.start.set()
     if len(msg_text)!=64:
