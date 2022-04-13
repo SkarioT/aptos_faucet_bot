@@ -66,7 +66,7 @@ async def send_welcome(message: types.Message,state: FSMContext):
     msg_text = message.text
     print(msg_text,message.from_user,datetime.now())
     msg_for_clients = await message.reply(f"You entered: {msg_text}")
-    # await GameStates.start.set()
+    await GameStates.start.set()
     if len(msg_text)!=64:
         print(f"Bad address =( {msg_text}\n Address length must be 64 chars !!!")
         bad_msg = await message.reply("Bad address =( \n Address length must be 64 chars !!!")
@@ -75,7 +75,7 @@ async def send_welcome(message: types.Message,state: FSMContext):
         await msg_for_clients.delete()
         await message.delete()
     else:
-        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter /change for change address")
+        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter your address or any address again to request.")
         await asyncio.sleep(5)
         await msg_for_clients.delete()
         await message.delete()
@@ -107,7 +107,7 @@ async def send_welcome(message: types.Message,state: FSMContext):
 
     else:
         faucet_client.fund_account(msg_text, 1000)
-        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter /change for change address")
+        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter your address or any address again to request.")
         await asyncio.sleep(5)
         await msg_for_clients.delete()
         await message.delete()
