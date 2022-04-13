@@ -60,6 +60,16 @@ async def send_welcome(message: types.Message,state: FSMContext):
     await asyncio.sleep(10)
     await message.delete()
     
+        
+# <----------- FAUCET LOGIC ---------------->      
+@dp.message_handler(commands=['faucet'],state='*')
+async def send_welcome(message: types.Message,state: FSMContext):
+    state_bot = await state.get_state()
+    print(state_bot)
+    await GameStates.faucet.set()
+    bad_answer = await bot.send_message(message.from_user.id,f"You have chosen to faucet 1,000 Moments to your account.\nEnter your account\wallet address:")
+    await message.delete()
+
 @dp.message_handler(state=GameStates.balance)
 async def send_welcome(message: types.Message,state: FSMContext):
     msg_text = message.text
@@ -77,18 +87,6 @@ async def send_welcome(message: types.Message,state: FSMContext):
         await asyncio.sleep(5)
         await msg_for_clients.delete()
         await message.delete()
-       
-
-        
-        
-# <----------- FAUCET LOGIC ---------------->      
-@dp.message_handler(commands=['faucet'],state='*')
-async def send_welcome(message: types.Message,state: FSMContext):
-    state_bot = await state.get_state()
-    print(state_bot)
-    await GameStates.faucet.set()
-    bad_answer = await bot.send_message(message.from_user.id,f"You have chosen to faucet 1,000 Moments to your account.\nEnter your account\wallet address:")
-    await message.delete()
 
 @dp.message_handler(state=GameStates.faucet)
 async def send_welcome(message: types.Message,state: FSMContext):
