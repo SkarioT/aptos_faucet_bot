@@ -75,32 +75,26 @@ async def send_welcome(message: types.Message,state: FSMContext):
     msg_text = message.text
     print(msg_text,message.from_user,datetime.now())
     msg_for_clients = await message.reply(f"You entered: {msg_text}")
-    if len(msg_text)!=64:
+    if len(msg_text)==64 or (len(msg_text)==66 and str(msg_text).startswith("0x") ) : #add start with "0x"
+        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter your address or any address again to request.")
+        await asyncio.sleep(5)
+        await msg_for_clients.delete()
+        await message.delete()
+    else:
         print(f"Bad address =( {msg_text}\n Address length must be 64 chars !!!")
         bad_msg = await message.reply("Bad address =( \n Address length must be 64 chars !!!")
         await asyncio.sleep(5)
         await bad_msg.delete()
         await msg_for_clients.delete()
         await message.delete()
-    else:
-        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter your address or any address again to request.")
-        await asyncio.sleep(5)
-        await msg_for_clients.delete()
-        await message.delete()
+
 
 @dp.message_handler(state=GameStates.faucet)
 async def send_welcome(message: types.Message,state: FSMContext):
     msg_text = message.text
     print(msg_text,message.from_user,datetime.now())
     msg_for_clients = await message.reply(f"You entered: {msg_text}")
-    if len(msg_text)!=64:
-        print(f"Bad address =( {msg_text}\n Address length must be 64 chars !!!")
-        bad_msg = await message.reply("Bad address =( \n Address length must be 64 chars!!!")
-        await asyncio.sleep(5)
-        await bad_msg.delete()
-        await msg_for_clients.delete()
-        await message.delete()
-    else:
+    if len(msg_text)==64 or (len(msg_text)==66 and str(msg_text).startswith("0x") ) : #add start with "0x"
         faucet_client.fund_account(msg_text, 1000)
         balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter your address or any address again to request.")
         await asyncio.sleep(5)
@@ -108,6 +102,14 @@ async def send_welcome(message: types.Message,state: FSMContext):
         await message.delete()
         await asyncio.sleep(5)
         await balance.delete()
+    else:
+        print(f"Bad address =( {msg_text}\n Address length must be 64 chars !!!")
+        bad_msg = await message.reply("Bad address =( \n Address length must be 64 chars!!!")
+        await asyncio.sleep(5)
+        await bad_msg.delete()
+        await msg_for_clients.delete()
+        await message.delete()
+    
 
 
 #RUN
