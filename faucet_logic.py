@@ -79,9 +79,5 @@ rest_client = RestClient(TESTNET_URL)
 faucet_client = FaucetClient(FAUCET_URL, rest_client)
 
 # my_address = '45b44793724a5ecc6ad85fa60949d0824cfc7f61d6bd74490b13598379313141'
-# #len = 64
 
-# #amount max 20_000
-# faucet_client.fund_account(my_address, 20000)
-# print(f"My balance: {rest_client.account_balance(my_address)}")
 

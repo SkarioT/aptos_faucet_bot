@@ -28,14 +28,14 @@ class GameStates(StatesGroup):
     balance = State()
 
 
-welcome_msg = "Hi!\n  БОТ позволяет получить 1000 монет на Ваш аккаунт. Список доступных команд:\n/help - возвращет данное сообщение\n/faucet - Выдаёт на Ваш аккаунт 1к монет"
+welcome_msg = "Hi!\n This BOT allows you to get 1000 coins to your account. List of available commands:\n/help - information about bot commands\n/faucet - Gives 1k coins to your account \n /balance - returns your wallet balance"
 
 @dp.message_handler(commands=['start'],state="*")
 async def send_welcome(message: types.Message,state: FSMContext):
     state_bot = await state.get_state()
     print(state_bot)
     if 'start' in str(state_bot):
-        bad_answer = await message.reply(f"Невозможно повторно запустить бот. Бот уже запущен!\n /help - информация по командам бота")
+        bad_answer = await message.reply(f"The bot cannot be re-started. The bot is already running!\n /help - information about bot commands")
         time.sleep(5)
         await bad_answer.delete()
     else:
@@ -54,9 +54,7 @@ async def send_welcome(message: types.Message,state: FSMContext):
 @dp.message_handler(commands=['balance'],state="*")
 async def send_welcome(message: types.Message,state: FSMContext):
     await GameStates.balance.set()
-    answer_msg = await bot.send_message(message.from_user.id,f"Вы выбрали просмотр баланса своего аккаунта\nВведите адресс вашего Аккунта:")
-    #msg_text = message.text
-    # balance = await message.reply(f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter /help for change address")
+    answer_msg = await bot.send_message(message.from_user.id,f"You have chosen to view your account balance\nEnter your account\wallet address:")
     await asyncio.sleep(10)
     await answer_msg.delete()
     await message.delete()
@@ -68,7 +66,7 @@ async def send_welcome(message: types.Message,state: FSMContext):
     msg_for_clients = await message.reply(f"You entered: {msg_text}")
     if len(msg_text)!=64:
         print("хуету ввел")
-        bad_msg = await message.reply("Bad address =( \n Address length must be 64 !!!")
+        bad_msg = await message.reply("Bad address =( \n Address length must be 64 chars !!!")
         await asyncio.sleep(5)
         await bad_msg.delete()
         await msg_for_clients.delete()
@@ -89,17 +87,17 @@ async def send_welcome(message: types.Message,state: FSMContext):
     state_bot = await state.get_state()
     print(state_bot)
     await GameStates.faucet.set()
-    bad_answer = await bot.send_message(message.from_user.id,f"Вы выбрали зачисление 1к момент на свой аккаунт\nВведите адресс вашего Аккунта:")
+    bad_answer = await bot.send_message(message.from_user.id,f"You have chosen to faucet 1,000 Moments to your account.\nEnter your account\wallet address:")
     await message.delete()
 
 @dp.message_handler(state=GameStates.faucet)
 async def send_welcome(message: types.Message,state: FSMContext):
     msg_text = message.text
-    print(msg_text,message.from_user.username,datetime.now())
+    print(msg_text,message.from_user,datetime.now())
     msg_for_clients = await message.reply(f"You entered: {msg_text}")
     if len(msg_text)!=64:
         print("хуету ввел")
-        bad_msg = await message.reply("Bad address =( \n Address length must be 64 !!!")
+        bad_msg = await message.reply("Bad address =( \n Address length must be 64 chars!!!")
         await asyncio.sleep(5)
         await bad_msg.delete()
         await msg_for_clients.delete()
