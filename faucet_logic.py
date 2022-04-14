@@ -4,7 +4,6 @@ from nacl.signing import SigningKey
 import hashlib
 import requests
 import time
-from typing import Any, Dict, Optional
 
 TESTNET_URL = "https://fullnode.devnet.aptoslabs.com"
 FAUCET_URL = "https://faucet.devnet.aptoslabs.com"
@@ -74,6 +73,16 @@ class FaucetClient:
         for txn_hash in txns.json():
             self.rest_client.wait_for_transaction(txn_hash)
 #<:!:section_2
+
+#:!:>section_3
+def get_address_from_pk(pk):
+    signing_key = SigningKey(bytes.fromhex(pk))
+    hasher = hashlib.sha3_256()
+    hasher.update(signing_key.verify_key.encode() + b'\x00')
+    address_from_pk =hasher.hexdigest()
+    return address_from_pk
+#<:!:section_3
+
 
 rest_client = RestClient(TESTNET_URL)
 faucet_client = FaucetClient(FAUCET_URL, rest_client)
