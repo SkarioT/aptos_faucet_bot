@@ -29,7 +29,7 @@ class GameStates(StatesGroup):
     address = State()
 
 
-welcome_msg = "Hi!\n This BOT allows you to get 1000 coins to your account. List of available commands:\n/help - information about bot commands\n/faucet - Gives 10k coins to your account \n /balance - returns your wallet balance \n /get_address_from_PK - this command allows you to get the address from the private key"
+welcome_msg = "Hi!\n This BOT allows you to get 1000 coins to your account. List of available commands:\n/help - information about bot commands\n/faucet - Gives 10k coins to your account \n /balance - returns your wallet balance \n /address - this command allows you to get the address from the private key"
 
 @dp.message_handler(commands=['start'],state="*")
 async def send_welcome(message: types.Message,state: FSMContext):
@@ -72,7 +72,7 @@ async def send_faucet(message: types.Message,state: FSMContext):
     await message.delete()
 
 # <----------- ADDRESS LOGIC ---------------->      
-@dp.message_handler(commands=['get_address_from_PK'],state='*')
+@dp.message_handler(commands=['address'],state='*')
 async def send_address(message: types.Message,state: FSMContext):
     state_bot = await state.get_state()
     print(state_bot)
