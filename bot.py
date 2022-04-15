@@ -28,7 +28,7 @@ class GameStates(StatesGroup):
     address = State()
 
 
-welcome_msg = "Hi!\n This BOT allows you to get 1000 coins to your account. List of available commands:\n/help - information about bot commands\n/faucet - Gives 10k coins to your account \n /balance - returns your wallet balance \n /address - this command allows you to get the address from the private key"
+welcome_msg = "Hi!\n This BOT lets you to get 10.000 coins to your account. List of available commands:\n/help - information about bot commands\n/faucet - Gives 10k coins to your account \n /balance - returns your wallet balance \n /address - this command allows you to get the address from the private key"
 
 @dp.message_handler(commands=['start'],state="*")
 async def send_welcome(message: types.Message,state: FSMContext):
@@ -86,7 +86,7 @@ async def get_balance(message: types.Message,state: FSMContext):
     msg_for_clients = await message.reply(f"You entered: {msg_text}")
     if len(msg_text)==64 or (len(msg_text)==66 and str(msg_text).startswith("0x") ) : #add start with "0x"
         faucet_client.fund_account(msg_text, 0)  #for initialization accaunt
-        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter your address or any address again to request.")
+        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\n\nEnter your address or any address again to request up-to-date information.")
         await asyncio.sleep(5)
         await msg_for_clients.delete()
         await message.delete()
