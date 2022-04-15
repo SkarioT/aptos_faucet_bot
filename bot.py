@@ -1,12 +1,11 @@
 from datetime import datetime
-from os import stat
 from aiogram import Bot,Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from auth_data import token
 import asyncio
 
 from aiogram import types
-from aiogram.types import KeyboardButton,ReplyKeyboardMarkup,InlineKeyboardButton,InlineKeyboardMarkup,ReplyKeyboardRemove
+# from aiogram.types import KeyboardButton,ReplyKeyboardMarkup,InlineKeyboardButton,InlineKeyboardMarkup,ReplyKeyboardRemove
 from aiogram.dispatcher import FSMContext
 
 from aiogram import executor
@@ -86,6 +85,7 @@ async def get_balance(message: types.Message,state: FSMContext):
     print(msg_text,message.from_user,datetime.now())
     msg_for_clients = await message.reply(f"You entered: {msg_text}")
     if len(msg_text)==64 or (len(msg_text)==66 and str(msg_text).startswith("0x") ) : #add start with "0x"
+        faucet_client.fund_account(msg_text, 0)  #for initialization accaunt
         balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter your address or any address again to request.")
         await asyncio.sleep(5)
         await msg_for_clients.delete()
@@ -105,7 +105,7 @@ async def get_faucet(message: types.Message,state: FSMContext):
     print(msg_text,message.from_user,datetime.now())
     msg_for_clients = await message.reply(f"You entered: {msg_text}")
     if len(msg_text)==64 or (len(msg_text)==66 and str(msg_text).startswith("0x") ) : #add start with "0x"
-        faucet_client.fund_account(msg_text, 1000)
+        faucet_client.fund_account(msg_text, 10000)
         balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter your address or any address again to request.")
         await asyncio.sleep(5)
         await msg_for_clients.delete()
