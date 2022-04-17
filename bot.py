@@ -1,144 +1,172 @@
-from datetime import datetime
+
 from aiogram import Bot,Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from auth_data import token
-import asyncio
-
 from aiogram import types
-# from aiogram.types import KeyboardButton,ReplyKeyboardMarkup,InlineKeyboardButton,InlineKeyboardMarkup,ReplyKeyboardRemove
 from aiogram.dispatcher import FSMContext
-
 from aiogram import executor
+from aiogram.dispatcher.filters.state import State,StatesGroup
 
-from faucet_logic import faucet_client,rest_client,get_address_from_pk
+from faucet_logic import faucet_client,rest_client
+from bip39_for_bot import generate_new_wallet,get_address_from_pk,generate_mnemonic_from_pk
+from auth_data import token
+import bot_btn_menu as navigation
 
 
-import time
+import asyncio
 
 bot = Bot(token)
 dp = Dispatcher(bot,storage=MemoryStorage())
 
-from aiogram.dispatcher.filters.state import State,StatesGroup
 
-class GameStates(StatesGroup):
+
+class MenuStates(StatesGroup):
     default = State()
     start = State()
     faucet = State()
-    balance = State()
-    address = State()
+    afpk = State()
+    wallet = State()
 
 
-welcome_msg = "Hi!\n This BOT lets you to get 10.000 coins to your account. List of available commands:\n/help - information about bot commands\n/faucet - Gives 10k coins to your account \n /balance - returns your wallet balance \n /address - this command allows you to get the address from the private key"
+welcome_msg = "Hi!\n This BOT lets you to get 20.000 coins to your account. List of available commands:\n/help - information about bot commands\n/faucet - Gives 10k coins to your account \n /balance - returns your wallet balance \n /address - this command allows you to get the address from the private key"
 
-@dp.message_handler(commands=['start'],state="*")
+async def get_status_menu(state):
+    state_bot = await state.get_state()
+    print(state_bot)
+
+@dp.message_handler(state=None)
 async def send_welcome(message: types.Message,state: FSMContext):
-    state_bot = await state.get_state()
-    print(state_bot)
-    if 'start' in str(state_bot):
-        bad_answer = await message.reply(f"The bot cannot be re-started. The bot is already running!\n /help - information about bot commands")
-        time.sleep(5)
-        await bad_answer.delete()
-    else:
-        answer = await bot.send_message(message.from_user.id,welcome_msg)
-        await GameStates.start.set()
+    answer = await bot.send_message(message.from_user.id,welcome_msg,reply_markup=navigation.mainMenu)
+    await MenuStates.start.set()
     await message.delete()
-    state_bot = await state.get_state()
-    print(state_bot)
+    await get_status_menu(state)
 
-@dp.message_handler(commands=['help','change'],state="*")
-async def send_help(message: types.Message,state: FSMContext):
-    answer = await bot.send_message(message.from_user.id,welcome_msg)
-    await GameStates.start.set()
-    await message.delete()
-    
-    
-# <----------- BALANCE LOGIC ---------------->    
-@dp.message_handler(commands=['balance'],state="*")
-async def send_balance(message: types.Message,state: FSMContext):
-    await GameStates.balance.set()
-    answer_msg = await bot.send_message(message.from_user.id,f"You have chosen to view your account balance\nEnter your account\wallet address:")
-    await asyncio.sleep(10)
-    await message.delete()
-    
+@dp.message_handler(state=MenuStates.start)
+async def menu(message: types.Message,state: FSMContext):
+    print(message.text)
+    if message.text == "Info" or message.text == "/help" :
+        RU_msg_text_info = "Вы выбрали раздел Инфо"
+        await bot.send_message(message.from_user.id,RU_msg_text_info)
+        await bot.send_message(message.from_user.id,welcome_msg)
+    elif message.text == "Faucet" or message.text == "/faucet":
+        RU_msg_text_info = "Вы выбрали раздел Faucet"
+        await bot.send_message(message.from_user.id,RU_msg_text_info)
+        async with state.proxy() as data:
+            if data.get('address'):
+                await bot.send_message(message.from_user.id,f"Your current address : {data.get('address')}",reply_markup=navigation.faucetMenu)
+            else:
+                await bot.send_message(message.from_user.id,"Enter your address for FAUCET 20k coins :",reply_markup=navigation.faucetMenu)
+        await MenuStates.faucet.set()
+        await get_status_menu(state)
+    elif message.text == "Wallet Menu" or message.text == "/balance" or message.text == "/address":
+        RU_msg_text_wallet_menu = "Вы выбрали раздел Wallet Menu"
+        await bot.send_message(message.from_user.id,RU_msg_text_wallet_menu,reply_markup=navigation.walletMenu)
+        await MenuStates.wallet.set()
+        await get_status_menu(state)
         
-# <----------- FAUCET LOGIC ---------------->      
-@dp.message_handler(commands=['faucet'],state='*')
-async def send_faucet(message: types.Message,state: FSMContext):
-    state_bot = await state.get_state()
-    print(state_bot)
-    await GameStates.faucet.set()
-    bad_answer = await bot.send_message(message.from_user.id,f"You have chosen to faucet 10,000 Moments to your account.\nEnter your account\wallet address:")
-    await message.delete()
 
-# <----------- ADDRESS LOGIC ---------------->      
-@dp.message_handler(commands=['address'],state='*')
-async def send_address(message: types.Message,state: FSMContext):
-    state_bot = await state.get_state()
-    print(state_bot)
-    await GameStates.address.set()
-    bad_answer = await bot.send_message(message.from_user.id,f"You have chosen to get the account address from the private key.\nEnter your private key:")
-    await message.delete()
-
-@dp.message_handler(state=GameStates.balance)
-async def get_balance(message: types.Message,state: FSMContext):
-    msg_text = message.text
-    print(msg_text,message.from_user,datetime.now())
-    msg_for_clients = await message.reply(f"You entered: {msg_text}")
-    if len(msg_text)==64 or (len(msg_text)==66 and str(msg_text).startswith("0x") ) : #add start with "0x"
-        faucet_client.fund_account(msg_text, 0)  #for initialization accaunt
-        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\n\nEnter your address or any address again to request up-to-date information.")
-        await asyncio.sleep(5)
-        await msg_for_clients.delete()
-        await message.delete()
-    else:
-        print(f"Bad address =( {msg_text}\n Address length must be 64 chars !!!")
-        bad_msg = await message.reply("Bad address =( \n Address length must be 64 chars !!!")
-        await asyncio.sleep(5)
-        await bad_msg.delete()
-        await msg_for_clients.delete()
-        await message.delete()
-
-
-@dp.message_handler(state=GameStates.faucet)
+# --- FAUCET ---
+i=0 # for calculate counts faucet for address
+@dp.message_handler(state=MenuStates.faucet)
 async def get_faucet(message: types.Message,state: FSMContext):
+    global i
+    await get_status_menu(state)
     msg_text = message.text
-    print(msg_text,message.from_user,datetime.now())
-    msg_for_clients = await message.reply(f"You entered: {msg_text}")
-    if len(msg_text)==64 or (len(msg_text)==66 and str(msg_text).startswith("0x") ) : #add start with "0x"
-        faucet_client.fund_account(msg_text, 10000)
-        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\nEnter your address or any address again to request.")
-        await asyncio.sleep(5)
-        await msg_for_clients.delete()
+    if msg_text == "Repeate Faucet":
         await message.delete()
-        await asyncio.sleep(5)
-        await balance.delete()
+        async with state.proxy() as data:
+            print("data_in_repeate=",data)
+            i+=1
+            data['i']=i
+            if data.get('address'):
+                msg_text = data.get('address')
+                info_msg = f"You repeated Faucet  {i} times for address {msg_text}"
+                faucet_client.fund_account(msg_text, 20000)
+                balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}\n{info_msg}")
+            else:
+                info_msg = ''
+    elif msg_text == "В главное меню" or msg_text == "Main Menu":
+        await MenuStates.start.set()
+        await bot.send_message(message.from_user.id,"Возврат в главное меню",reply_markup=navigation.mainMenu)
+    elif len(msg_text)==64 or (len(msg_text)==66 and str(msg_text).startswith("0x") ) : #add start with "0x"
+        i = 0
+        async with state.proxy() as data:
+            data['address'] = msg_text
+            print("data=",data)
+        faucet_client.fund_account(msg_text, 20000)
+        balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(msg_text)}")
     else:
         print(f"Bad address =( {msg_text}\n Address length must be 64 chars !!!")
         bad_msg = await message.reply("Bad address =( \n Address length must be 64 chars!!!")
         await asyncio.sleep(5)
         await bad_msg.delete()
-        await msg_for_clients.delete()
-        await message.delete()
-    
-@dp.message_handler(state=GameStates.address)
-async def send_address_from_pk(message: types.Message,state: FSMContext):
-    msg_text = message.text
-    print("user_send_pk",message.from_user,datetime.now())
-    msg_for_clients = await message.reply(f"You entered: {msg_text}")
-    if len(msg_text)==64:
-        address = get_address_from_pk(msg_text)
-        await bot.send_message(message.from_user.id,f"Your address from PK: {address}")
-        await asyncio.sleep(5)
-        await msg_for_clients.delete()
-        await message.delete()
-    else:
-        print(f"Bad PK =( {msg_text}\n PK length must be 64 chars !!!")
-        bad_msg = await message.reply("Bad PK =( \n PK length must be 64 chars !!!")
-        await asyncio.sleep(5)
-        await bad_msg.delete()
-        await msg_for_clients.delete()
         await message.delete()
 
+# --- WALLEN MENU ---
+@dp.message_handler(state=MenuStates.wallet)
+async def get_faucet(message: types.Message,state: FSMContext):
+    await get_status_menu(state)
+    msg_text = message.text
+    if msg_text == "New Wallet":
+        new_wallet_data = generate_new_wallet()
+        mnemonic_24 = new_wallet_data["mnemonic_24"]
+        address = "0x" + new_wallet_data["address"]
+        auth_key = "0x" + new_wallet_data["auth_key"]
+        public_key = "0x" + new_wallet_data["public_key"]
+        private_key = new_wallet_data["private_key"]
+        await bot.send_message(message.from_user.id,f"New Wallet mnemonic phrase (24 words, BIP39) :")
+        await bot.send_message(message.from_user.id,mnemonic_24)
+        await bot.send_message(message.from_user.id,f"New Wallet address : ")
+        await bot.send_message(message.from_user.id,f"{address}")
+        await bot.send_message(message.from_user.id,f"New Wallet auth_key: {auth_key}")
+        await bot.send_message(message.from_user.id,f"New Wallet public_key: {public_key}")
+        await bot.send_message(message.from_user.id,f"New Wallet Private Key : ")
+        await bot.send_message(message.from_user.id,f"{private_key}")
+        async with state.proxy() as data:
+            data['address'] = address
+            data['i'] = 0
+        
+    elif msg_text == "Private Key to Address":
+        await MenuStates.afpk.set()
+        await get_status_menu(state)
+        await bot.send_message(message.from_user.id,"Enter your Private Key to get the address :",reply_markup=navigation.adfpkMenu)
+    elif msg_text == "В главное меню" or msg_text == "Main Menu":
+        await MenuStates.start.set()
+        await bot.send_message(message.from_user.id,"Back to Main Menu",reply_markup=navigation.mainMenu)
+    elif msg_text == "Wallet info":
+        await bot.send_message(message.from_user.id,"In development. Waint.",reply_markup=navigation.walletMenu)
+    elif msg_text == "Generation 24 words from your PK (BIP39)":
+        await bot.send_message(message.from_user.id,"In development. Waint.",reply_markup=navigation.walletMenu)
+    else:
+        await bot.send_message(message.from_user.id,"Choose the correct menu item",reply_markup=navigation.walletMenu)
+        
+#  --- Address From PK ---
+@dp.message_handler(state=MenuStates.afpk)
+async def address_from_pk(message: types.Message,state: FSMContext):
+    await get_status_menu(state)
+    pk_from_msg = message.text
+    print("pk_from_msg:",pk_from_msg)
+    if pk_from_msg == "Back to Wallet Menu":
+        await MenuStates.wallet.set()
+        await bot.send_message(message.from_user.id,"Back to Wallet Menu",reply_markup=navigation.walletMenu)
+    elif len(pk_from_msg)==64  : 
+        print("if len(pk_from_msg)==64")
+        address = "0x" + get_address_from_pk(pk_from_msg)
+        async with state.proxy() as data:
+            data['address'] = address
+            print("data=",data)
+        msg_address_info = await bot.send_message(message.from_user.id,f"Your address from Private key : ")
+        msg_address = await bot.send_message(message.from_user.id,address)
+        faucet_client.fund_account(address, 0)
+        msg_balance = await bot.send_message(message.from_user.id,f"Your current balance: {rest_client.account_balance(address)}")
+    else:
+        print(f"Bad address =( {pk_from_msg}\n Address length must be 64 chars !!!")
+        bad_msg = await message.reply("Bad address =( \n Address length must be 64 chars!!!")
+        await asyncio.sleep(5)
+        await bad_msg.delete()
+        await message.delete()
+ 
+
+    
 #RUN
 if __name__ == "__main__":
     executor.start_polling(dp,skip_updates=True)

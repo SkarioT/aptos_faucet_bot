@@ -1,5 +1,4 @@
 
-
 from nacl.signing import SigningKey
 import hashlib
 import requests
@@ -9,6 +8,34 @@ TESTNET_URL = "https://fullnode.devnet.aptoslabs.com"
 FAUCET_URL = "https://faucet.devnet.aptoslabs.com"
 
 #:!:>section_1
+class Account:
+    """Represents an account as well as the private, public key-pair for the Aptos blockchain."""
+
+    def __init__(self, seed: bytes = None) -> None:
+        if seed is None:
+            self.signing_key = SigningKey.generate()
+        else:
+            self.signing_key = SigningKey(seed)
+
+    def address(self) -> str:
+        """Returns the address associated with the given account"""
+
+        return self.auth_key()
+
+    def auth_key(self) -> str:
+        """Returns the auth_key for the associated account"""
+
+        hasher = hashlib.sha3_256()
+        hasher.update(self.signing_key.verify_key.encode() + b'\x00')
+        return hasher.hexdigest()
+
+    def pub_key(self) -> str:
+        """Returns the public key for the associated account"""
+
+        return self.signing_key.verify_key.encode().hex()
+#<:!:section_1
+
+#:!:>section_2
 class RestClient:
     """A wrapper around the Aptos-core Rest API"""
 
@@ -54,10 +81,10 @@ class RestClient:
                 return int(resource["data"]["coin"]["value"])
         return None
 
-#<:!:section_1
+#<:!:section_2
 
 
-#:!:>section_2
+#:!:>section_3
 class FaucetClient:
     """Faucet creates and funds accounts. This is a thin wrapper around that."""
 
@@ -72,16 +99,8 @@ class FaucetClient:
         assert txns.status_code == 200, txns.text
         for txn_hash in txns.json():
             self.rest_client.wait_for_transaction(txn_hash)
-#<:!:section_2
-
-#:!:>section_3
-def get_address_from_pk(pk):
-    signing_key = SigningKey(bytes.fromhex(pk))
-    hasher = hashlib.sha3_256()
-    hasher.update(signing_key.verify_key.encode() + b'\x00')
-    address_from_pk =hasher.hexdigest()
-    return address_from_pk
 #<:!:section_3
+
 
 
 rest_client = RestClient(TESTNET_URL)
