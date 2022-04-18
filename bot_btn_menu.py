@@ -1,4 +1,4 @@
-from aiogram.types import KeyboardButton,ReplyKeyboardMarkup#,InlineKeyboardButton,InlineKeyboardMarkup,ReplyKeyboardRemove
+from aiogram.types import KeyboardButton,ReplyKeyboardMarkup
 
 # --- MAIN MENU --- 
 btnInfo = KeyboardButton("❓ Info")

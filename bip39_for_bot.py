@@ -8,7 +8,6 @@ import hashlib
 def generate_new_wallet():
     mnemo = Mnemonic("english")
     words = mnemo.generate(strength=256)
-    # print(words)
 
     private_key = bip39.decode_phrase(words)
     new_acc = Account(private_key)
@@ -25,8 +24,6 @@ def generate_new_wallet():
     
 def generate_mnemonic_from_pk(address):
     back = bip39.encode_bytes(bytes.fromhex(address)) 
-    print("mnemonic from Private Key:\n")
-    print(back)
     return back
 
 #:!:>section_3
@@ -34,6 +31,6 @@ def get_address_from_pk(pk):
     signing_key = SigningKey(bytes.fromhex(pk))
     hasher = hashlib.sha3_256()
     hasher.update(signing_key.verify_key.encode() + b'\x00')
-    address_from_pk =hasher.hexdigest()
+    address_from_pk = hasher.hexdigest()
     return address_from_pk
 #<:!:section_3
