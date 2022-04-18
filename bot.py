@@ -1,4 +1,5 @@
 
+from tkinter import Menu
 from aiogram import Bot,Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram import types
@@ -25,7 +26,7 @@ class MenuStates(StatesGroup):
     faucet = State()
     afpk = State()
     wallet = State()
-
+    seed24 = State()
 
 welcome_msg ="""
 ❓ Info  - help message
@@ -64,7 +65,7 @@ async def menu(message: types.Message,state: FSMContext):
         await bot.send_message(message.from_user.id,ENG_msg_text_info)
         async with state.proxy() as data:
             if data.get('address'):
-                await bot.send_message(message.from_user.id,f"Your current address 🗝 : {data.get('address')}",reply_markup=navigation.faucetMenu)
+                await bot.send_message(message.from_user.id,f"Your current address 🗝 : {data.get('address')} Enter a new address for change",reply_markup=navigation.faucetMenu)
             else:
                 await bot.send_message(message.from_user.id,"Enter your address 🗝 for 🚰 FAUCET 2️⃣0️⃣.0️⃣0️⃣0️⃣ coins :",reply_markup=navigation.faucetMenu)
         await MenuStates.faucet.set()
@@ -74,6 +75,8 @@ async def menu(message: types.Message,state: FSMContext):
         await bot.send_message(message.from_user.id,RU_msg_text_wallet_menu,reply_markup=navigation.walletMenu)
         await MenuStates.wallet.set()
         await get_status_menu(state)
+    # else:
+    #     await message.reply("I don't undartand. Plese press button:  ❓ Info",reply_markup=navigation.walletMenu)
         
 
 # --- FAUCET ---
@@ -147,7 +150,8 @@ async def get_faucet(message: types.Message,state: FSMContext):
     elif msg_text == "ℹ️ Wallet info":
         await bot.send_message(message.from_user.id,"🚧🔜 In development. Waint.",reply_markup=navigation.walletMenu)
     elif msg_text == "📝 Generates 24 words from your PK" or msg_text == "/mnemonic":
-        await bot.send_message(message.from_user.id,"🚧🔜 In development. Waint.",reply_markup=navigation.walletMenu)
+        await bot.send_message(message.from_user.id,"Enter your 🔐 Private Key to get the address :",reply_markup=navigation.adfpkMenu)
+        await MenuStates.seed24.set()
     else:
         await bot.send_message(message.from_user.id,"Choose the correct menu item",reply_markup=navigation.walletMenu)
         
@@ -170,12 +174,31 @@ async def address_from_pk(message: types.Message,state: FSMContext):
         faucet_client.fund_account(address, 0)
         msg_balance = await bot.send_message(message.from_user.id,f"Your current balance 💵: {rest_client.account_balance(address)}")
     else:
-        print(f"❌Bad address =( {pk_from_msg}\n Address length must be 64 chars !!!❌")
-        bad_msg = await message.reply("❌Bad address =( \n Address length must be 64 chars!!!❌")
+        print(f"❌Bad Private Key =( {pk_from_msg}\n Private Key length must be 64 chars !!!❌")
+        bad_msg = await message.reply("❌Bad Private Key =( \n Private Key length must be 64 chars!!!❌")
         await asyncio.sleep(5)
         await bad_msg.delete()
         await message.delete()
- 
+
+#  --- Generates 24 words from your PK ---
+@dp.message_handler(state=MenuStates.seed24)
+async def seed_words_from_pk(message: types.Message,state: FSMContext):
+    await get_status_menu(state)
+    pk_from_msg = message.text
+    print("pk_from_msg:",pk_from_msg)
+    if pk_from_msg == "🔙 Wallet Menu":
+        await MenuStates.wallet.set()
+        await bot.send_message(message.from_user.id,"🔙 Wallet Menu",reply_markup=navigation.walletMenu)
+    elif len(pk_from_msg)==64  : 
+        seed_24 = generate_mnemonic_from_pk(pk_from_msg)
+        msg_address_info = await bot.send_message(message.from_user.id,f"Your 📝 24 words from 🔐 Private key : ")
+        msg_address = await bot.send_message(message.from_user.id,seed_24)
+    else:
+        print(f"❌Bad Private Key =( {pk_from_msg}\n Private key length must be 64 chars !!!❌")
+        bad_msg = await message.reply("❌Bad Private Key =( \n Private Key length must be 64 chars!!!❌")
+        await asyncio.sleep(5)
+        await bad_msg.delete()
+        await message.delete() 
 
     
 #RUN
