@@ -14,10 +14,6 @@ def generate_new_wallet():
     new_acc = Account(private_key)
     hex_private_key = private_key.hex()
 
-    print("Address: ",new_acc.address())
-    print("Auth_key: ",new_acc.auth_key())
-    print("Public_key: ",new_acc.pub_key())
-    print("Private_key: ",hex_private_key)
     data_return = {}
     data_return['mnemonic_24'] = words
     data_return['address'] = str(new_acc.address())
@@ -41,8 +37,3 @@ def get_address_from_pk(pk):
     address_from_pk =hasher.hexdigest()
     return address_from_pk
 #<:!:section_3
-# generate_mnemonic_from_pk(get_address_from_pk("75bec726d02fbd825dd6a14ac864b526e7ff6b0297f91404a751f218577c4585"))
-
-# print(len("75bec726d02fbd825dd6a14ac864b526e7ff6b0297f91404a751f218577c4585"))
-# mpk = "48CC865EE4EECCB8DB584CF07C177F42E9D5A73905AA174576ECB3DF00999554"
-# print(get_address_from_pk(mpk))

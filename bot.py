@@ -44,11 +44,11 @@ async def send_welcome(message: types.Message,state: FSMContext):
 async def menu(message: types.Message,state: FSMContext):
     print(message.text)
     if message.text == "Info" or message.text == "/help" :
-        RU_msg_text_info = "Вы выбрали раздел Инфо"
+        RU_msg_text_info = "You chose Info"
         await bot.send_message(message.from_user.id,RU_msg_text_info)
         await bot.send_message(message.from_user.id,welcome_msg)
     elif message.text == "Faucet" or message.text == "/faucet":
-        RU_msg_text_info = "Вы выбрали раздел Faucet"
+        RU_msg_text_info = "You chose Faucet"
         await bot.send_message(message.from_user.id,RU_msg_text_info)
         async with state.proxy() as data:
             if data.get('address'):
@@ -58,7 +58,7 @@ async def menu(message: types.Message,state: FSMContext):
         await MenuStates.faucet.set()
         await get_status_menu(state)
     elif message.text == "Wallet Menu" or message.text == "/balance" or message.text == "/address":
-        RU_msg_text_wallet_menu = "Вы выбрали раздел Wallet Menu"
+        RU_msg_text_wallet_menu = "You chose Wallet Menu"
         await bot.send_message(message.from_user.id,RU_msg_text_wallet_menu,reply_markup=navigation.walletMenu)
         await MenuStates.wallet.set()
         await get_status_menu(state)
@@ -86,7 +86,7 @@ async def get_faucet(message: types.Message,state: FSMContext):
                 info_msg = ''
     elif msg_text == "В главное меню" or msg_text == "Main Menu":
         await MenuStates.start.set()
-        await bot.send_message(message.from_user.id,"Возврат в главное меню",reply_markup=navigation.mainMenu)
+        await bot.send_message(message.from_user.id,"Back to Main Menu",reply_markup=navigation.mainMenu)
     elif len(msg_text)==64 or (len(msg_text)==66 and str(msg_text).startswith("0x") ) : #add start with "0x"
         i = 0
         async with state.proxy() as data:
@@ -115,10 +115,10 @@ async def get_faucet(message: types.Message,state: FSMContext):
         private_key = new_wallet_data["private_key"]
         await bot.send_message(message.from_user.id,f"New Wallet mnemonic phrase (24 words, BIP39) :")
         await bot.send_message(message.from_user.id,mnemonic_24)
-        await bot.send_message(message.from_user.id,f"New Wallet address : ")
+        await bot.send_message(message.from_user.id,f"New Wallet Address : ")
         await bot.send_message(message.from_user.id,f"{address}")
-        await bot.send_message(message.from_user.id,f"New Wallet auth_key: {auth_key}")
-        await bot.send_message(message.from_user.id,f"New Wallet public_key: {public_key}")
+        await bot.send_message(message.from_user.id,f"New Wallet Auth Key: {auth_key}")
+        await bot.send_message(message.from_user.id,f"New Wallet Public Key: {public_key}")
         await bot.send_message(message.from_user.id,f"New Wallet Private Key : ")
         await bot.send_message(message.from_user.id,f"{private_key}")
         async with state.proxy() as data:
@@ -134,7 +134,7 @@ async def get_faucet(message: types.Message,state: FSMContext):
         await bot.send_message(message.from_user.id,"Back to Main Menu",reply_markup=navigation.mainMenu)
     elif msg_text == "Wallet info":
         await bot.send_message(message.from_user.id,"In development. Waint.",reply_markup=navigation.walletMenu)
-    elif msg_text == "Generation 24 words from your PK (BIP39)":
+    elif msg_text == "Generates 24 words from your PK (BIP39)" or msg_text == "/mnemonic":
         await bot.send_message(message.from_user.id,"In development. Waint.",reply_markup=navigation.walletMenu)
     else:
         await bot.send_message(message.from_user.id,"Choose the correct menu item",reply_markup=navigation.walletMenu)

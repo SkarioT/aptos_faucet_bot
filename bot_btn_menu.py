@@ -16,7 +16,7 @@ faucetMenu = ReplyKeyboardMarkup(resize_keyboard=True).add(btnRepeateFaucet,btnB
 # --- WALLEN MENU ---
 btnNewWallet = KeyboardButton("New Wallet")
 btnAdressFromPK = KeyboardButton("Private Key to Address")
-btnMnemonicFromPK = KeyboardButton("Generation 24 words from your PK (BIP39)")
+btnMnemonicFromPK = KeyboardButton("Generates 24 words from your PK (BIP39)")
 btnWalletInfo = KeyboardButton("Wallet info")
 btnBackToWalletMenu = KeyboardButton("Back to Wallet Menu")
 adfpkMenu = ReplyKeyboardMarkup(resize_keyboard=True).add(btnBackToWalletMenu)
