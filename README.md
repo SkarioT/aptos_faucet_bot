@@ -12,12 +12,12 @@ Old Commands:
  - /address - generates wallet address from private key
 
 New commands ( button):
- + ** Info** - help message
- + **Faucet **- gives (faucet) 20k coins to your account\wallet
+ + **Info** - help message
+ + **Faucet**- gives (faucet) 20k coins to your account\wallet
     * **Repeate Faucet** - repeate faucet for current address\wallet (including with the address from the context)
         > After entering the address for the first time, the address enters the context, which means that you can use the “Repeat Faucet” function without additional address entry.
     * **Main Menu** - Back to Main Menu
- + ** Wallet Menu** - Wallet Menu.
+ + **Wallet Menu** - Wallet Menu.
     *  **New Wallet** - Generate New Wallet, with:
         * Mnemonic phrase (24 words, BIP39)
         * Address
@@ -29,7 +29,7 @@ New commands ( button):
         * Back to Wallet Menu - Back to Wallet Menu
     * **Generates 24 words from your PK (BIP39)** - Generates 24 words from your PK (BIP39)
         * **Back to Wallet Menu** - Back to Wallet Menu
-    * **Wallet info **- Info about your wallet
+    * **Wallet info**- Info about your wallet
         * **Back to Wallet Menu** - Back to Wallet Menu
     * **Main Menu** - Back to Main Menu
 
