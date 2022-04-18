@@ -40,7 +40,9 @@ welcome_msg ="""
     🔙 Main Menu  - Back to Main Menu
     
     Feed back: https://t.me/zhovy"""
-async def get_status_menu(state):
+    
+    #need additional info about user 
+async def get_status_menu(state,message=''):
     state_bot = await state.get_state()
     print(state_bot)
 
@@ -96,7 +98,10 @@ async def get_faucet(message: types.Message,state: FSMContext):
                 faucet_client.fund_account(msg_text, 20000)
                 balance = await bot.send_message(message.from_user.id,f"Your current balance 💵 : {rest_client.account_balance(msg_text)}\n{info_msg}")
             else:
-                info_msg = ''
+                info_msg = await bot.send_message(message.from_user.id,"Please enter your address 🗝 for 🚰 FAUCET 2️⃣0️⃣.0️⃣0️⃣0️⃣ coins :")
+                await asyncio.sleep(3)
+                await info_msg.delete()
+
     elif msg_text == "В главное меню" or msg_text == "🔙 Main Menu":
         await MenuStates.start.set()
         await bot.send_message(message.from_user.id,"🔛 Main Menu",reply_markup=navigation.mainMenu)
@@ -183,7 +188,6 @@ async def address_from_pk(message: types.Message,state: FSMContext):
 async def seed_words_from_pk(message: types.Message,state: FSMContext):
     await get_status_menu(state)
     pk_from_msg = message.text
-    print("pk_from_msg:",pk_from_msg)
     if pk_from_msg == "🔙 Wallet Menu":
         await MenuStates.wallet.set()
         await bot.send_message(message.from_user.id,"🔙 Wallet Menu",reply_markup=navigation.walletMenu)
