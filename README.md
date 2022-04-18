@@ -17,8 +17,8 @@ New commands ( button):
     * **🚰 Repeate Faucet** - repeate faucet for current address\wallet (including with the address from the context)
         > After entering the address for the first time, the address enters the context, which means that you can use the “Repeat Faucet” function without additional address entry.
     * **🔙 Main Menu** - Back to Main Menu
- + **🖨 New Wallet** - Wallet Menu.
-    *  **New Wallet** - Generate New Wallet, with:
+ + **➡️ Wallet Menu** - Wallet Menu.
+    *  **🖨 New Wallet** - Generate New Wallet, with:
         * 📝 Mnemonic phrase (24 words, BIP39)
         * 🗝 Address
         * 🔑 Auth key
@@ -26,7 +26,7 @@ New commands ( button):
         * 🔐 Private Key
         > After generating a new wallet, the address 🗝 of the new wallet gets into the context, which means that you can find out information about the wallet and also use the "Faucet" function without additionally entering the address.
     * **🔐➡️🗝 PK to Address** - Generates wallet Address from Private key
-        * Back to Wallet Menu - Back to Wallet Menu
+        * **🔙 Wallet Menu** - Back to Wallet Menu
     * **📝 Generates 24 words from your PK** - Generates 24 words from your PK (BIP39)
         * **🔙 Wallet Menu** - Back to Wallet Menu
     * **ℹ️ Wallet info**- Info about your wallet
