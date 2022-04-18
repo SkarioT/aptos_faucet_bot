@@ -5,7 +5,10 @@ __pycache__/
 
 # C extensions
 *.so
+
+#my data
 auth_data.py
+workspace.code-workspace
 
 # Distribution / packaging
 .Python
