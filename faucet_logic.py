@@ -4,8 +4,17 @@ import hashlib
 import requests
 import time
 
-TESTNET_URL = "https://fullnode.devnet.aptoslabs.com"
 FAUCET_URL = "https://faucet.devnet.aptoslabs.com"
+TESTNET_URL = "https://fullnode.devnet.aptoslabs.com"
+LOCAL_NODE_URL = "127.0.0.1:8080"
+
+try:
+    l_n_status = requests.get(url=LOCAL_NODE_URL).status_cod
+    node_url = LOCAL_NODE_URL
+except:
+    node_url = TESTNET_URL
+    
+print(node_url)
 
 #:!:>section_1
 class Account:
@@ -103,7 +112,7 @@ class FaucetClient:
 
 
 
-rest_client = RestClient(TESTNET_URL)
+rest_client = RestClient(node_url)
 faucet_client = FaucetClient(FAUCET_URL, rest_client)
 
 
