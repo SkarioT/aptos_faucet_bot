@@ -4,10 +4,10 @@ import hashlib
 import requests
 import time
 
+node_url = ''
 FAUCET_URL = "https://faucet.devnet.aptoslabs.com"
 TESTNET_URL = "https://fullnode.devnet.aptoslabs.com"
-
-LOCAL_NODE_URL = "http://0.0.0.0:8080/"
+LOCAL_NODE_URL = "http://0.0.0.0:8080"
 
 try:
     l_n_status = requests.get(url=LOCAL_NODE_URL)
