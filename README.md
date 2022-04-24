@@ -25,7 +25,7 @@ New commands ( button):
         * 🔓 Public key
         * 🔐 Private Key
         > 📜After generating a new wallet, the address 🗝 of the new wallet gets into the context, which means that you can find out information about the wallet and also use the "Faucet" function without additionally entering the address.
-    * **🔐➡️🗝 PK to Address** - Generates wallet Address from Private key
+    * **🔐➡️🗝 PK to Address|pub_key** - Getting wallet Address and Public Key from Private key
         * **🔙 Wallet Menu** - Back to Wallet Menu
     * **📝 Generates 24 words from your PK** - Generates 24 words from your PK (BIP39)
         * **🔙 Wallet Menu** - Back to Wallet Menu

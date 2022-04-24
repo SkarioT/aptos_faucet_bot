@@ -32,5 +32,7 @@ def get_address_from_pk(pk):
     hasher = hashlib.sha3_256()
     hasher.update(signing_key.verify_key.encode() + b'\x00')
     address_from_pk = hasher.hexdigest()
-    return address_from_pk
+    publik_key = signing_key.verify_key.encode().hex()
+    return address_from_pk,publik_key
 #<:!:section_3
+

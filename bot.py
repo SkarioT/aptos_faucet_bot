@@ -168,12 +168,14 @@ async def address_from_pk(message: types.Message,state: FSMContext):
         await MenuStates.wallet.set()
         await bot.send_message(message.from_user.id,"🔙 Wallet Menu",reply_markup=navigation.walletMenu)
     elif len(pk_from_msg)==64  : 
-        address = "0x" + get_address_from_pk(pk_from_msg)
+        address,publik_key = get_address_from_pk(pk_from_msg)
         async with state.proxy() as data:
-            data['address'] = address
+            data['address'] = "0x" + address
             print("data=",data)
         msg_address_info = await bot.send_message(message.from_user.id,f"Your 🗝 address from 🔐 Private key : ")
-        msg_address = await bot.send_message(message.from_user.id,address)
+        msg_address = await bot.send_message(message.from_user.id,"0x" + address)
+        msg_address_info = await bot.send_message(message.from_user.id,f"Your 🔓 public key from 🔐 Private key : ")
+        msg_address = await bot.send_message(message.from_user.id,"0x" + publik_key)
         faucet_client.fund_account(address, 0)
         msg_balance = await bot.send_message(message.from_user.id,f"Your current balance 💵: {rest_client.account_balance(address)}")
     else:
