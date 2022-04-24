@@ -146,7 +146,7 @@ async def get_faucet(message: types.Message,state: FSMContext):
     elif msg_text == "🔐➡️🗝 PK to Address|Public Key":
         await MenuStates.afpk.set()
         await get_status_menu(state)
-        await bot.send_message(message.from_user.id,"Enter your 🔐 Private Key to get the address| public key:",reply_markup=navigation.adfpkMenu)
+        await bot.send_message(message.from_user.id,"Enter your 🔐 Private Key to get the address|public key:",reply_markup=navigation.adfpkMenu)
     elif msg_text == "В главное меню" or msg_text == "🔙 Main Menu":
         await MenuStates.start.set()
         await bot.send_message(message.from_user.id,"Back to Main Menu",reply_markup=navigation.mainMenu)
