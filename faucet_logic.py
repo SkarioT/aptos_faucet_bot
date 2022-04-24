@@ -6,13 +6,15 @@ import time
 
 FAUCET_URL = "https://faucet.devnet.aptoslabs.com"
 TESTNET_URL = "https://fullnode.devnet.aptoslabs.com"
-LOCAL_NODE_URL = "127.0.0.1:8080"
+
+LOCAL_NODE_URL = "http://0.0.0.0:8080/"
 
 try:
-    l_n_status = requests.get(url=LOCAL_NODE_URL).status_cod
+    l_n_status = requests.get(url=LOCAL_NODE_URL)
     node_url = LOCAL_NODE_URL
 except:
     node_url = TESTNET_URL
+
     
 print(node_url)
 
