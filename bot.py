@@ -34,7 +34,7 @@ welcome_msg ="""
 ➡️ Wallet Menu  - Wallet Menu.
     🖨 New Wallet  - Generate New Wallet, with:
         📜 After generating a new wallet, the address 🗝 of the new wallet gets into the context, which means that you can find out information about the wallet and also use the "Faucet" function without additionally entering the address.
-    🔐➡️🗝 PK to Address  - Generates wallet Address from Private key
+    🔐➡️🗝 PK to Address|pub_key - Getting wallet Address and Public Key from Private key
     📝 Generates 24 words from your PK  - Generates 24 words from your PK (BIP39)
     ℹ️ Wallet info - Info about your wallet
     🔙 Main Menu  - Back to Main Menu
@@ -143,10 +143,10 @@ async def get_faucet(message: types.Message,state: FSMContext):
             data['address'] = address
             data['i'] = 0
         
-    elif msg_text == "🔐➡️🗝 PK to Address":
+    elif msg_text == "🔐➡️🗝 PK to Address|Public Key":
         await MenuStates.afpk.set()
         await get_status_menu(state)
-        await bot.send_message(message.from_user.id,"Enter your 🔐 Private Key to get the address :",reply_markup=navigation.adfpkMenu)
+        await bot.send_message(message.from_user.id,"Enter your 🔐 Private Key to get the address| public key:",reply_markup=navigation.adfpkMenu)
     elif msg_text == "В главное меню" or msg_text == "🔙 Main Menu":
         await MenuStates.start.set()
         await bot.send_message(message.from_user.id,"Back to Main Menu",reply_markup=navigation.mainMenu)
