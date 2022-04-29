@@ -16,7 +16,7 @@ import asyncio
 bot = Bot(token)
 dp = Dispatcher(bot,storage=MemoryStorage())
 
-
+# добавить переход в главное меню с люого места и/или при каздом действии взывать текущую панель меню
 
 class MenuStates(StatesGroup):
     default = State()
@@ -96,9 +96,9 @@ async def get_faucet(message: types.Message,state: FSMContext):
                 msg_text = data.get('address')
                 info_msg = f"You repeated 🎰 Faucet 🚰 {i} times for address {msg_text}"
                 faucet_client.fund_account(msg_text, 20000)
-                balance = await bot.send_message(message.from_user.id,f"Your current balance 💵 : {rest_client.account_balance(msg_text)}\n{info_msg}")
+                balance = await bot.send_message(message.from_user.id,f"Your current balance 💵 : {rest_client.account_balance(msg_text)}\n{info_msg}",reply_markup=navigation.faucetMenu)
             else:
-                info_msg = await bot.send_message(message.from_user.id,"Please enter your address 🗝 for 🚰 FAUCET 2️⃣0️⃣.0️⃣0️⃣0️⃣ coins :")
+                info_msg = await bot.send_message(message.from_user.id,"Please enter your address 🗝 for 🚰 FAUCET 2️⃣0️⃣.0️⃣0️⃣0️⃣ coins :",reply_markup=navigation.faucetMenu)
                 await asyncio.sleep(3)
                 await info_msg.delete()
 
@@ -111,10 +111,10 @@ async def get_faucet(message: types.Message,state: FSMContext):
             data['address'] = msg_text
             print("data=",data)
         faucet_client.fund_account(msg_text, 20000)
-        balance = await bot.send_message(message.from_user.id,f"Your current balance 💵 : {rest_client.account_balance(msg_text)}")
+        balance = await bot.send_message(message.from_user.id,f"Your current balance 💵 : {rest_client.account_balance(msg_text)}",reply_markup=navigation.faucetMenu)
     else:
         print(f"❌ Bad address =( {msg_text}\n Address length must be 64 chars !!!❌")
-        bad_msg = await message.reply("❌ Bad address =( \n Address length must be 64 chars!!!❌")
+        bad_msg = await message.reply("❌ Bad address =( \n Address length must be 64 chars!!!❌",reply_markup=navigation.faucetMenu)
         await asyncio.sleep(5)
         await bad_msg.delete()
         await message.delete()
